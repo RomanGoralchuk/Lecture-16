@@ -7,41 +7,59 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.List;
 
 public class PetDaoImpl implements PetDao {
-    private EntityManager entityManager;
     private static final Logger logger = LoggerFactory.getLogger(PetDaoImpl.class);
+    private EntityManager em;
 
-    @Override
-    public Pet get(Serializable id) throws SQLException {
-        return null;
+    public PetDaoImpl(EntityManager em) {
+        this.em = em;
     }
 
     @Override
-    public Pet save(Pet pet) throws SQLException {
-        return null;
+    public Pet find(Long id) {
+        Pet pet = em.find(Pet.class, id);
+        if (pet == null) {
+            logger.error(new IllegalArgumentException("(" + id + ") -This value does not exist in the database.").getMessage());
+        } else {
+            logger.info("Operation completed");
+        }
+        return pet;
     }
 
     @Override
-    public void update(Pet pet) throws SQLException {
-
+    public boolean save(Pet pet) {
+        try {
+            em.getTransaction().begin();
+            em.persist(pet);
+            em.getTransaction().commit();
+            logger.info("The transaction was successful");
+            return true;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            logger.error("Transaction failed " + e.getMessage(), e);
+            return false;
+        }
     }
 
     @Override
-    public int delete(Serializable id) throws SQLException {
-        return 0;
+    public boolean update(Pet petNew) {
+        return false;
     }
 
     @Override
-    public List<Pet> findAllEntity() throws SQLException {
-        return null;
+    public boolean delete(Long id) {
+        return false;
     }
 
     @Override
-    public List<Pet> getAllPetByType(PetType petType) throws SQLException {
+    public List<Pet> findAllEntity() {
+       return null;
+    }
+
+    @Override
+    public List<Pet> getAllPetByType(PetType petType) {
         return null;
     }
 }

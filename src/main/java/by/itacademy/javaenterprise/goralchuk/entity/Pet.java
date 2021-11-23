@@ -1,41 +1,53 @@
 package by.itacademy.javaenterprise.goralchuk.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "pet")
 public class Pet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pet_id")
     private Long id;
-    @Column(name = "pet_name")
-    private String animalName;
-    @Column(name = "pet_type")
-    private PetType petType;
-    @Column(name = "pet_birthday")
+    private String name;
+    private PetType type;
+    @Temporal(TemporalType.DATE)
     private Date birthday;
-    @OneToOne(mappedBy = "pet", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE,
-            CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(mappedBy = "petPeople", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private People master;
+
+    public Pet(String animalName, PetType petType, Date birthday) {
+        this.name = animalName;
+        this.type = petType;
+        this.birthday = birthday;
+    }
 
     @Override
     public String toString() {
-        return "\n Pet{" +
-                "id=" + id +
-                ", animalName='" + animalName + "'" +
-                ", petType=" + petType +
-                ", birthday=" + birthday +
-                ", master='" + master.getName() + "'" +
-                '}';
+        return "Pet{" +
+                "Id=" + id +
+                ", PetName='" + name + "'" +
+                ", PetType=" + type +
+                ", PetBirthday=" + birthday +
+                "}";
     }
 }
