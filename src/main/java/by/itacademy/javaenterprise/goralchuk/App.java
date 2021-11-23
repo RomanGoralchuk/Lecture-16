@@ -14,7 +14,6 @@ public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
-        System.out.println("dfdsfds");
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             FlywayUtil.cleanMigration();
@@ -24,7 +23,7 @@ public class App {
             logger.info("" + petDao.findAllEntity());
             logger.info("" + peopleDao.find(1L));
             petDao.delete(1L);
-            System.out.println(peopleDao.getAllPeopleByPetType(PetType.CAT));
+            logger.info("" + peopleDao.getAllPeopleByPetType(PetType.CAT));
         } catch (StackOverflowError  e) {
             logger.error(e.getMessage(), e);
         }
