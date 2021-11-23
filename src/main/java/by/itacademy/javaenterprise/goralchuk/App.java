@@ -2,8 +2,6 @@ package by.itacademy.javaenterprise.goralchuk;
 
 import by.itacademy.javaenterprise.goralchuk.dao.implementation.PeopleDaoImpl;
 import by.itacademy.javaenterprise.goralchuk.dao.implementation.PetDaoImpl;
-import by.itacademy.javaenterprise.goralchuk.entity.People;
-import by.itacademy.javaenterprise.goralchuk.entity.Pet;
 import by.itacademy.javaenterprise.goralchuk.entity.PetType;
 import by.itacademy.javaenterprise.goralchuk.util.FlywayUtil;
 import by.itacademy.javaenterprise.goralchuk.util.HibernateUtil;
@@ -16,6 +14,7 @@ public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
+        System.out.println("dfdsfds");
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             FlywayUtil.cleanMigration();
