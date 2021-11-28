@@ -15,8 +15,9 @@ import static org.mockito.Mockito.*;
 
 public class PeopleDaoImplTest {
     private static final Logger logger = LoggerFactory.getLogger(PeopleDaoImplTest.class);
-    private EntityManager eManager;
-    private EntityTransaction eTransaction;
+
+    private EntityManager entityManagerManager;
+    private EntityTransaction entityTransactionTransaction;
     private PeopleDaoImpl peopleDao;
 
     @Rule
@@ -33,40 +34,33 @@ public class PeopleDaoImplTest {
     };
 
     @Before
-    public void setUp() throws Exception {
-        eManager = mock(EntityManager.class);
-        eTransaction = mock(EntityTransaction.class);
-        peopleDao = new PeopleDaoImpl(eManager);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        eManager.close();
+    public void setUp() {
+        entityManagerManager = mock(EntityManager.class);
+        entityTransactionTransaction = mock(EntityTransaction.class);
+        peopleDao = new PeopleDaoImpl(entityManagerManager);
     }
 
     @Test
     public void whenFindPeopleById() {
         Long expectedId = 10L;
-        People people = new People();
-        people.setId(expectedId);
+        People people = new People(expectedId);
 
-        when(eManager.find(People.class, expectedId)).thenReturn(people);
+        when(entityManagerManager.find(People.class, expectedId)).thenReturn(people);
+
+        logger.info("FirstObject  {}", people);
+        logger.info("SecondObject  {}", peopleDao.find(expectedId));
 
         assertEquals(people, peopleDao.find(expectedId));
-        logger.info("\n FirstObject  {}", people);
-        logger.info("\n SecondObject  {}", peopleDao.find(expectedId));
     }
 
     @Test
     public void whenSavePeopleToDatabase() {
-        People people = new People();
-        people.setId(10L);
+        Long expectedId = 10L;
+        People people = new People(expectedId);
 
-        when(eManager.getTransaction()).thenReturn(eTransaction);
+        when(entityManagerManager.getTransaction()).thenReturn(entityTransactionTransaction);
 
-        boolean expectedSaveResult = peopleDao.save(people);
-
-        assertNotNull(people);
-        assertTrue(expectedSaveResult);
+        assertNotNull(peopleDao.save(people));
+        assertEquals(expectedId, peopleDao.save(people).getId());
     }
 }

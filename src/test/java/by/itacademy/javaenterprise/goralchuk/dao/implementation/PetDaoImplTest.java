@@ -10,15 +10,14 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import java.sql.SQLException;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class PetDaoImplTest {
     private static final Logger logger = LoggerFactory.getLogger(PetDaoImplTest.class);
-    private EntityManager eManager;
-    private EntityTransaction eTransaction;
+
+    private EntityManager entityManagerManager;
+    private EntityTransaction entityTransactionTransaction;
     private PetDaoImpl petDao;
 
     @Rule
@@ -35,40 +34,33 @@ public class PetDaoImplTest {
     };
 
     @Before
-    public void setUp() throws Exception {
-        eManager = mock(EntityManager.class);
-        eTransaction = mock(EntityTransaction.class);
-        petDao = new PetDaoImpl(eManager);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        eManager.close();
+    public void setUp() {
+        entityManagerManager = mock(EntityManager.class);
+        entityTransactionTransaction = mock(EntityTransaction.class);
+        petDao = new PetDaoImpl(entityManagerManager);
     }
 
     @Test
-    public void whenFindPetById() throws SQLException {
+    public void whenFindPetById() {
         Long expectedId = 10L;
-        Pet pet = new Pet();
-        pet.setId(expectedId);
+        Pet pet = new Pet(expectedId);
 
-        when(eManager.find(Pet.class, expectedId)).thenReturn(pet);
+        when(entityManagerManager.find(Pet.class, expectedId)).thenReturn(pet);
+
+        logger.info("FirstObject  {}", pet);
+        logger.info("SecondObject  {}", petDao.find(expectedId));
 
         assertEquals(pet, petDao.find(expectedId));
-        logger.info("\n FirstObject  {}", pet);
-        logger.info("\n SecondObject  {}", petDao.find(expectedId));
     }
 
     @Test
     public void whenSavePetToDatabase() {
-        Pet pet = new Pet();
-        pet.setId(10L);
+        Long expectedId = 10L;
+        Pet pet = new Pet(expectedId);
 
-        when(eManager.getTransaction()).thenReturn(eTransaction);
+        when(entityManagerManager.getTransaction()).thenReturn(entityTransactionTransaction);
 
-        boolean expectedSaveResult = petDao.save(pet);
-
-        assertNotNull(pet);
-        assertTrue(expectedSaveResult);
+        assertNotNull(petDao.save(pet));
+        assertEquals(expectedId, petDao.save(pet).getId());
     }
 }

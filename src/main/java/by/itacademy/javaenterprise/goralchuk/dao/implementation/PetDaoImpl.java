@@ -7,59 +7,62 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 
 public class PetDaoImpl implements PetDao {
     private static final Logger logger = LoggerFactory.getLogger(PetDaoImpl.class);
-    private EntityManager em;
+
+    private EntityManager entityManager;
 
     public PetDaoImpl(EntityManager em) {
-        this.em = em;
+        this.entityManager = em;
     }
 
     @Override
     public Pet find(Long id) {
-        Pet pet = em.find(Pet.class, id);
+        Pet pet = entityManager.find(Pet.class, id);
         if (pet == null) {
-            logger.error(new IllegalArgumentException("(" + id + ") -This value does not exist in the database.").getMessage());
+            logger.debug("Object not found");
+            return null;
         } else {
-            logger.info("Operation completed");
+            logger.debug("Operation completed");
+            return pet;
         }
-        return pet;
     }
 
     @Override
-    public boolean save(Pet pet) {
+    public Pet save(Pet pet) {
         try {
-            em.getTransaction().begin();
-            em.persist(pet);
-            em.getTransaction().commit();
-            logger.info("The transaction was successful");
-            return true;
+            entityManager.getTransaction().begin();
+            entityManager.persist(pet);
+            entityManager.getTransaction().commit();
+            logger.debug("The transaction was successful - {}", pet.getId());
+            return pet;
         } catch (Exception e) {
-            em.getTransaction().rollback();
-            logger.error("Transaction failed " + e.getMessage(), e);
-            return false;
+            entityManager.getTransaction().rollback();
+            logger.error("Transaction failed {}", e.getMessage(), e);
+            return null;
         }
     }
 
     @Override
-    public boolean update(Pet petNew) {
-        return false;
+    public Pet update(Pet pet) {
+        return null;
     }
 
     @Override
-    public boolean delete(Long id) {
-        return false;
+    public long delete(Long id) {
+       return 0;
     }
 
     @Override
-    public List<Pet> findAllEntity() {
-       return null;
+    public List<Pet> findAll() {
+        return Collections.emptyList();
     }
 
     @Override
     public List<Pet> getAllPetByType(PetType petType) {
-        return null;
+        return Collections.emptyList();
     }
 }

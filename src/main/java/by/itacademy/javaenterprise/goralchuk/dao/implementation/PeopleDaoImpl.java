@@ -5,60 +5,65 @@ import by.itacademy.javaenterprise.goralchuk.entity.People;
 import by.itacademy.javaenterprise.goralchuk.entity.PetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 
 public class PeopleDaoImpl implements PeopleDao {
     private static final Logger logger = LoggerFactory.getLogger(PeopleDaoImpl.class);
-    private EntityManager em;
+
+    private EntityManager entityManager;
 
     public PeopleDaoImpl(EntityManager em) {
-        this.em = em;
+        this.entityManager = em;
     }
 
     @Override
     public People find(Long id) {
-        People people = em.find(People.class, id);
+        People people = entityManager.find(People.class, id);
         if (people == null) {
-            logger.error(new IllegalArgumentException("(" + id + ") -This value does not exist in the database.").getMessage());
+            logger.debug("Object not found");
+            return null;
         } else {
-            logger.info("Operation completed");
+            logger.debug("Operation completed");
+            return people;
         }
-        return people;
     }
 
     @Override
-    public boolean save(People people) {
+    public People save(People people) {
         try {
-            em.getTransaction().begin();
-            em.persist(people);
-            em.getTransaction().commit();
-            logger.info("The transaction was successful");
-            return true;
+            entityManager.getTransaction().begin();
+            entityManager.persist(people);
+            entityManager.getTransaction().commit();
+            logger.debug("The transaction was successful - {}", people.getId());
+            return people;
         } catch (Exception e) {
-            em.getTransaction().rollback();
-            logger.error("Transaction failed " + e.getMessage(), e);
-            return false;
+            entityManager.getTransaction().rollback();
+            logger.error("Transaction failed {}", e.getMessage(), e);
+            return null;
         }
     }
 
     @Override
-    public boolean update(People peopleNew){
-        return false;
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        return false;
-    }
-
-    @Override
-    public List<People> findAllEntity() {
+    public People update(People people) {
         return null;
+    }
+
+
+    @Override
+    public long delete(Long id) {
+        return 0;
+    }
+
+    @Override
+    public List<People> findAll() {
+        return Collections.emptyList();
     }
 
     @Override
     public List<People> getAllPeopleByPetType(PetType petType) {
-        return null;
+        return Collections.emptyList();
     }
 }
